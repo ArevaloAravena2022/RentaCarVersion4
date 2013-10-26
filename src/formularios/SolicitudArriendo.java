@@ -75,7 +75,7 @@ public class SolicitudArriendo extends javax.swing.JFrame {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Solicitud de Arriendo / Calculo de Presupuesto:"));
 
-        jLabel2.setText("Yo con Nombre:");
+        jLabel2.setText("Nombre Solicitante:");
 
         jLabel14.setText("Teléfono Contacto:");
 
@@ -99,7 +99,7 @@ public class SolicitudArriendo extends javax.swing.JFrame {
 
         jLabel7.setText("Cantidad de Vehículos a Arrendar:");
 
-        jLabel8.setText("Presupuesto Total:");
+        jLabel8.setText("Precio Total:");
 
         jbtPresupuesto.setText("Calcular Presupesto");
 
@@ -124,9 +124,9 @@ public class SolicitudArriendo extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel6)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel5))
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
@@ -268,10 +268,10 @@ public class SolicitudArriendo extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(29, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(21, 21, 21)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(86, 86, 86))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -281,7 +281,7 @@ public class SolicitudArriendo extends javax.swing.JFrame {
                 .addContainerGap(130, Short.MAX_VALUE))
         );
 
-        setSize(new java.awt.Dimension(666, 667));
+        setSize(new java.awt.Dimension(600, 667));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 

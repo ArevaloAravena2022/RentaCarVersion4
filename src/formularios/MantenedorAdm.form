@@ -11,12 +11,17 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jmIngresarPersonal">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Ingresar Personal"/>
+                <Property name="text" type="java.lang.String" value="Ingresar Datos Personal"/>
+              </Properties>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmeModificarPersonal">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Modificar Datos Personal"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmEliminarPersonal">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Eliminar Personal"/>
+                <Property name="text" type="java.lang.String" value="Eliminar Datos Personal"/>
               </Properties>
             </MenuItem>
           </SubComponents>

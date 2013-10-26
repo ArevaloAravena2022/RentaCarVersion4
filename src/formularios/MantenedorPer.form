@@ -6,32 +6,37 @@
       <SubComponents>
         <Menu class="javax.swing.JMenu" name="jmbGestionarSolicitudes">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Gestionar Solicitudes"/>
+            <Property name="text" type="java.lang.String" value="Gestionar"/>
           </Properties>
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="jmIngresarClientes">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Ingresar Clientes"/>
+                <Property name="text" type="java.lang.String" value="Ingresar Datos Cliente"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmIngresarClientesActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="jmeModificarClientes">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Modificar Datos Cliente"/>
+              </Properties>
+            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmIngresarReservas">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Ingresar Reservas"/>
+                <Property name="text" type="java.lang.String" value="Ingresar Reserva de Arriendo"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmCrearContratos">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Crear Contratos"/>
+                <Property name="text" type="java.lang.String" value="Crear Contrato de Arriendo"/>
               </Properties>
             </MenuItem>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator1">
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jmConsultarRegistros">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Consultar Registros"/>
+                <Property name="text" type="java.lang.String" value="Consultar Registros Clientes"/>
               </Properties>
             </MenuItem>
           </SubComponents>

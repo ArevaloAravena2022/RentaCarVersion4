@@ -29,6 +29,7 @@ public class MantenedorAdm extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jmbGestionarPersonal = new javax.swing.JMenu();
         jmIngresarPersonal = new javax.swing.JMenuItem();
+        jmeModificarPersonal = new javax.swing.JMenuItem();
         jmEliminarPersonal = new javax.swing.JMenuItem();
         jmbGestionarConsultas = new javax.swing.JMenu();
         jmConsultarPersonal = new javax.swing.JMenuItem();
@@ -40,10 +41,13 @@ public class MantenedorAdm extends javax.swing.JFrame {
 
         jmbGestionarPersonal.setText("Gestionar Personal");
 
-        jmIngresarPersonal.setText("Ingresar Personal");
+        jmIngresarPersonal.setText("Ingresar Datos Personal");
         jmbGestionarPersonal.add(jmIngresarPersonal);
 
-        jmEliminarPersonal.setText("Eliminar Personal");
+        jmeModificarPersonal.setText("Modificar Datos Personal");
+        jmbGestionarPersonal.add(jmeModificarPersonal);
+
+        jmEliminarPersonal.setText("Eliminar Datos Personal");
         jmbGestionarPersonal.add(jmEliminarPersonal);
 
         jMenuBar1.add(jmbGestionarPersonal);
@@ -125,5 +129,6 @@ public class MantenedorAdm extends javax.swing.JFrame {
     private javax.swing.JMenu jmbGestionarConsultas;
     private javax.swing.JMenu jmbGestionarPersonal;
     private javax.swing.JMenu jmbSalir;
+    private javax.swing.JMenuItem jmeModificarPersonal;
     // End of variables declaration//GEN-END:variables
 }

@@ -51,7 +51,7 @@ public class Principal extends javax.swing.JFrame {
         jMenuBar1.setBackground(new java.awt.Color(255, 255, 255));
         jMenuBar1.setToolTipText("");
 
-        jMenu1.setText("Cargos");
+        jMenu1.setText("Ingresar al Sistema");
 
         jmAdministrador.setText("Administrador");
         jmAdministrador.addActionListener(new java.awt.event.ActionListener() {
@@ -71,7 +71,7 @@ public class Principal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Opciones");
+        jMenu2.setText("Finalizar");
 
         jmFinalizar.setText("Salir del Sistema");
         jmFinalizar.addActionListener(new java.awt.event.ActionListener() {

@@ -29,6 +29,7 @@ public class MantenedorPer extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         jmbGestionarSolicitudes = new javax.swing.JMenu();
         jmIngresarClientes = new javax.swing.JMenuItem();
+        jmeModificarClientes = new javax.swing.JMenuItem();
         jmIngresarReservas = new javax.swing.JMenuItem();
         jmCrearContratos = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
@@ -39,9 +40,9 @@ public class MantenedorPer extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Mantenedor");
 
-        jmbGestionarSolicitudes.setText("Gestionar Solicitudes");
+        jmbGestionarSolicitudes.setText("Gestionar");
 
-        jmIngresarClientes.setText("Ingresar Clientes");
+        jmIngresarClientes.setText("Ingresar Datos Cliente");
         jmIngresarClientes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jmIngresarClientesActionPerformed(evt);
@@ -49,14 +50,17 @@ public class MantenedorPer extends javax.swing.JFrame {
         });
         jmbGestionarSolicitudes.add(jmIngresarClientes);
 
-        jmIngresarReservas.setText("Ingresar Reservas");
+        jmeModificarClientes.setText("Modificar Datos Cliente");
+        jmbGestionarSolicitudes.add(jmeModificarClientes);
+
+        jmIngresarReservas.setText("Ingresar Reserva de Arriendo");
         jmbGestionarSolicitudes.add(jmIngresarReservas);
 
-        jmCrearContratos.setText("Crear Contratos");
+        jmCrearContratos.setText("Crear Contrato de Arriendo");
         jmbGestionarSolicitudes.add(jmCrearContratos);
         jmbGestionarSolicitudes.add(jSeparator1);
 
-        jmConsultarRegistros.setText("Consultar Registros");
+        jmConsultarRegistros.setText("Consultar Registros Clientes");
         jmbGestionarSolicitudes.add(jmConsultarRegistros);
 
         jMenuBar1.add(jmbGestionarSolicitudes);
@@ -133,5 +137,6 @@ public class MantenedorPer extends javax.swing.JFrame {
     private javax.swing.JMenuItem jmIngresarReservas;
     private javax.swing.JMenu jmbGestionarSolicitudes;
     private javax.swing.JMenu jmbSalir;
+    private javax.swing.JMenuItem jmeModificarClientes;
     // End of variables declaration//GEN-END:variables
 }
