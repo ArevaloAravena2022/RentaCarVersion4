@@ -15,6 +15,7 @@ public class ControlPersonal extends javax.swing.JFrame {
     /**
      * Creates new form ControlAcceso
      */
+    MantenedorPer mp;
     private int opcion;
     Principal prin;
     public ControlPersonal() {
@@ -49,6 +50,11 @@ public class ControlPersonal extends javax.swing.JFrame {
         jLabel3.setText("Ingrese su Clave:");
 
         jbtAccederPer.setText("Acceder >>");
+        jbtAccederPer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtAccederPerActionPerformed(evt);
+            }
+        });
 
         jbtVolverPer.setText("<< Volver");
         jbtVolverPer.addActionListener(new java.awt.event.ActionListener() {
@@ -124,6 +130,13 @@ public class ControlPersonal extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_jbtVolverPerActionPerformed
+
+    private void jbtAccederPerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAccederPerActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        mp=new MantenedorPer();
+        mp.setVisible(true);
+    }//GEN-LAST:event_jbtAccederPerActionPerformed
 
     /**
      * @param args the command line arguments

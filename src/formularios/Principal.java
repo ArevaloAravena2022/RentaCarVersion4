@@ -16,7 +16,6 @@ public class Principal extends javax.swing.JFrame {
      * Creates new form Principal
      */
     private int opcion;
-    ControlAdministrador ca;
     ControlPersonal cp;
     public Principal() {
         initComponents();
@@ -35,7 +34,6 @@ public class Principal extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
-        jmAdministrador = new javax.swing.JMenuItem();
         jmPersonal = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jmFinalizar = new javax.swing.JMenuItem();
@@ -52,14 +50,6 @@ public class Principal extends javax.swing.JFrame {
         jMenuBar1.setToolTipText("");
 
         jMenu1.setText("Ingresar al Sistema");
-
-        jmAdministrador.setText("Administrador");
-        jmAdministrador.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jmAdministradorActionPerformed(evt);
-            }
-        });
-        jMenu1.add(jmAdministrador);
 
         jmPersonal.setText("Personal");
         jmPersonal.addActionListener(new java.awt.event.ActionListener() {
@@ -126,13 +116,6 @@ public class Principal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_jmFinalizarActionPerformed
 
-    private void jmAdministradorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmAdministradorActionPerformed
-        // TODO add your handling code here:
-        this.setVisible(false);
-        ca = new ControlAdministrador();
-        ca.setVisible(true);
-    }//GEN-LAST:event_jmAdministradorActionPerformed
-
     private void jmPersonalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmPersonalActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
@@ -180,7 +163,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jmAdministrador;
     private javax.swing.JMenuItem jmFinalizar;
     private javax.swing.JMenuItem jmPersonal;
     // End of variables declaration//GEN-END:variables

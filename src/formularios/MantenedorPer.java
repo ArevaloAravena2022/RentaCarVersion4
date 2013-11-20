@@ -4,6 +4,8 @@
  */
 package formularios;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Carlos Aravena
@@ -13,6 +15,10 @@ public class MantenedorPer extends javax.swing.JFrame {
     /**
      * Creates new form Mantenedor
      */
+    IngresoClientes ic;
+    SolicitudArriendo sa;
+    Contrato con;
+    private int opcion;
     public MantenedorPer() {
         initComponents();
     }
@@ -28,12 +34,23 @@ public class MantenedorPer extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jmbGestionarSolicitudes = new javax.swing.JMenu();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenu1 = new javax.swing.JMenu();
         jmIngresarClientes = new javax.swing.JMenuItem();
         jmeModificarClientes = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
         jmIngresarReservas = new javax.swing.JMenuItem();
+        jmiModificarReservas = new javax.swing.JMenuItem();
+        jMenu7 = new javax.swing.JMenu();
         jmCrearContratos = new javax.swing.JMenuItem();
-        jSeparator1 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
         jmConsultarRegistros = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenuItem10 = new javax.swing.JMenuItem();
         jmbSalir = new javax.swing.JMenu();
         jmFinalizar = new javax.swing.JMenuItem();
 
@@ -41,6 +58,9 @@ public class MantenedorPer extends javax.swing.JFrame {
         setTitle("Mantenedor");
 
         jmbGestionarSolicitudes.setText("Gestionar");
+        jmbGestionarSolicitudes.add(jSeparator1);
+
+        jMenu1.setText("Clientes");
 
         jmIngresarClientes.setText("Ingresar Datos Cliente");
         jmIngresarClientes.addActionListener(new java.awt.event.ActionListener() {
@@ -48,26 +68,86 @@ public class MantenedorPer extends javax.swing.JFrame {
                 jmIngresarClientesActionPerformed(evt);
             }
         });
-        jmbGestionarSolicitudes.add(jmIngresarClientes);
+        jMenu1.add(jmIngresarClientes);
 
         jmeModificarClientes.setText("Modificar Datos Cliente");
-        jmbGestionarSolicitudes.add(jmeModificarClientes);
+        jmeModificarClientes.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmeModificarClientesActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jmeModificarClientes);
+
+        jmbGestionarSolicitudes.add(jMenu1);
+
+        jMenu2.setText("Reservas");
 
         jmIngresarReservas.setText("Ingresar Reserva de Arriendo");
-        jmbGestionarSolicitudes.add(jmIngresarReservas);
+        jmIngresarReservas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmIngresarReservasActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jmIngresarReservas);
+
+        jmiModificarReservas.setText("Modificar Reserva de Arriendo");
+        jmiModificarReservas.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiModificarReservasActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jmiModificarReservas);
+
+        jmbGestionarSolicitudes.add(jMenu2);
+
+        jMenu7.setText("Generar Contratos");
 
         jmCrearContratos.setText("Crear Contrato de Arriendo");
-        jmbGestionarSolicitudes.add(jmCrearContratos);
-        jmbGestionarSolicitudes.add(jSeparator1);
+        jmCrearContratos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmCrearContratosActionPerformed(evt);
+            }
+        });
+        jMenu7.add(jmCrearContratos);
 
-        jmConsultarRegistros.setText("Consultar Registros Clientes");
-        jmbGestionarSolicitudes.add(jmConsultarRegistros);
+        jmbGestionarSolicitudes.add(jMenu7);
+
+        jMenuItem9.setText("Calcular Presupuesto");
+        jmbGestionarSolicitudes.add(jMenuItem9);
 
         jMenuBar1.add(jmbGestionarSolicitudes);
+
+        jMenu5.setText("Consultas");
+
+        jmConsultarRegistros.setText("Consultar Registros Clientes");
+        jMenu5.add(jmConsultarRegistros);
+
+        jMenuItem2.setText("Consultar Por R.U.T");
+        jMenu5.add(jMenuItem2);
+
+        jMenuBar1.add(jMenu5);
+
+        jMenu3.setText("Parametros");
+
+        jMenuItem1.setText("Gestionar Comunas");
+        jMenu3.add(jMenuItem1);
+
+        jMenuItem4.setText("Gestionar Vehículos");
+        jMenu3.add(jMenuItem4);
+
+        jMenuItem10.setText("Gestionar Formas Pago");
+        jMenu3.add(jMenuItem10);
+
+        jMenuBar1.add(jMenu3);
 
         jmbSalir.setText("Salir");
 
         jmFinalizar.setText("Finalizar");
+        jmFinalizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmFinalizarActionPerformed(evt);
+            }
+        });
         jmbSalir.add(jmFinalizar);
 
         jMenuBar1.add(jmbSalir);
@@ -82,16 +162,62 @@ public class MantenedorPer extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 185, Short.MAX_VALUE)
+            .addGap(0, 179, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(416, 244));
+        setSize(new java.awt.Dimension(416, 238));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jmIngresarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmIngresarClientesActionPerformed
         // TODO add your handling code here:
+        this.setVisible(false);
+        ic=new IngresoClientes(1);
+        ic.setVisible(true);
     }//GEN-LAST:event_jmIngresarClientesActionPerformed
+
+    private void jmFinalizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmFinalizarActionPerformed
+        // TODO add your handling code here:
+        opcion=0;
+        opcion=JOptionPane.showConfirmDialog(this,
+                "¿Desea salir de la Aplicación?",
+                "Salir de la Aplicación",
+               JOptionPane.YES_NO_OPTION,
+               JOptionPane.QUESTION_MESSAGE);
+         if(opcion==JOptionPane.YES_OPTION)
+         {
+             System.exit(0);
+         }
+        
+    }//GEN-LAST:event_jmFinalizarActionPerformed
+
+    private void jmeModificarClientesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmeModificarClientesActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        ic = new IngresoClientes(2);
+        ic.setVisible(true);
+    }//GEN-LAST:event_jmeModificarClientesActionPerformed
+
+    private void jmIngresarReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmIngresarReservasActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        sa = new SolicitudArriendo(1);
+        sa.setVisible(true);
+    }//GEN-LAST:event_jmIngresarReservasActionPerformed
+
+    private void jmiModificarReservasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiModificarReservasActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        sa = new SolicitudArriendo(2);
+        sa.setVisible(true);
+    }//GEN-LAST:event_jmiModificarReservasActionPerformed
+
+    private void jmCrearContratosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmCrearContratosActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        con = new Contrato(1);
+        con.setVisible(true);
+    }//GEN-LAST:event_jmCrearContratosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -128,7 +254,17 @@ public class MantenedorPer extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem10;
+    private javax.swing.JMenuItem jMenuItem2;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem jmConsultarRegistros;
     private javax.swing.JMenuItem jmCrearContratos;
@@ -138,5 +274,6 @@ public class MantenedorPer extends javax.swing.JFrame {
     private javax.swing.JMenu jmbGestionarSolicitudes;
     private javax.swing.JMenu jmbSalir;
     private javax.swing.JMenuItem jmeModificarClientes;
+    private javax.swing.JMenuItem jmiModificarReservas;
     // End of variables declaration//GEN-END:variables
 }
