@@ -4,7 +4,18 @@
  */
 package formularios;
 
-/**
+import baseDatos.tablaClientes;
+import baseDatos.tablaVehiculos;
+import baseDatos.tablaPresupuesto;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**                     
  *
  * @author Carlos Aravena A
  */
@@ -13,8 +24,155 @@ public class Presupuesto extends javax.swing.JFrame {
     /**
      * Creates new form Presupuesto
      */
-    public Presupuesto() {
+    MantenedorPer mp;
+    private DefaultTableModel modelo;
+    private int precio, cant, dias, resultado;
+    private int opcion;
+    String sql;
+    String mensaje, menError;
+    String rut_cliente, nom_cliente, pres_cliente;
+    public Presupuesto(int opcion) {
+        this.opcion=opcion;
         initComponents();
+        titulos();
+        tablaVehiculos();
+        tablaPresupuesto();
+    }
+    public void tablaVehiculos() 
+    {
+        modelo = new DefaultTableModel();
+        modelo.addColumn("Patente");
+        modelo.addColumn("Tipo Vehículo");
+        modelo.addColumn("Marca");
+        modelo.addColumn("Modelo");
+        modelo.addColumn("Año");
+        modelo.addColumn("Disponibilidad");
+        modelo.addColumn("Precio $");
+        try
+        {
+            tablaVehiculos mysql = new tablaVehiculos();
+            java.sql.Connection cn = mysql.Conectar();
+            sql = "select * from Vehiculos";
+            java.sql.Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next())
+            {
+                Object[] registro = new Object[8];
+                registro[0] = rs.getString("patente_veh");
+                registro[1] = rs.getString("tipo_veh");
+                registro[2] = rs.getString("marca_veh");
+                registro[3] = rs.getString("modelo_veh");
+                registro[4] = rs.getString("ano_veh");
+                registro[5] = rs.getString("disponibilidad_veh");
+                registro[6] = rs.getString("precio_veh");
+                modelo.addRow(registro);
+            }
+            jTable1.setModel(modelo);
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null,
+                    "Error de Lectura de Datos");
+        }
+    }
+    public void tablaPresupuesto()
+    {
+        modelo = new DefaultTableModel();
+        modelo.addColumn("N° Presupuesto");
+        modelo.addColumn("R.U.T");
+        modelo.addColumn("Nombre Cliente");
+        modelo.addColumn("Presupuesto");
+        try
+        {
+            tablaPresupuesto mysql = new tablaPresupuesto();
+            java.sql.Connection cn = mysql.Conectar();
+            sql = "select * from Presupuesto";
+            java.sql.Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next())
+            {
+                Object[] registro = new Object[4];
+                registro[0] = rs.getString("id_presupuesto");
+                registro[1] = rs.getString("rut_cliente");
+                registro[2] = rs.getString("nom_cliente");
+                registro[3] = rs.getString("pres_cliente");
+                modelo.addRow(registro);
+            }
+            jTable2.setModel(modelo);
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null,
+                    "Error de Lectura de Datos");
+        }
+    }
+    public void titulos()
+    {
+        switch(opcion)
+        {
+            case 1: setTitle("Calcular Presupuesto");
+        }
+    }
+    public void validaciones()
+    {
+        if(this.jtfPrecioVehiculo.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Debes Ingresar Precio",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfPrecioVehiculo.requestFocus();
+            return;
+        }
+        if(this.jtfCantVehiculos.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Debes Ingresar Cantidad Vehiculos",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfCantVehiculos.requestFocus();
+            return;
+        }
+        if(this.jtfDiasArriendo.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this, 
+                    "Debes Ingresar Dias de Arriendo",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfDiasArriendo.requestFocus();
+            return;
+        }
+    }
+    public void limpiarCampos()
+    {
+        jtfPrecioVehiculo.setText("");
+        jtfCantVehiculos.setText("");
+        jtfDiasArriendo.setText("");
+        jtfTotal.setText("");
+        jtfNomCliente.setText("");
+        jtfRut.requestFocus();
+    }
+    public void calcular()
+    {
+        precio = Integer.parseInt(jtfPrecioVehiculo.getText());
+        cant = Integer.parseInt(jtfCantVehiculos.getText());
+        dias = Integer.parseInt(jtfDiasArriendo.getText());
+        resultado = precio*cant*dias;
+        jtfTotal.setText(""+resultado);
+    }
+    public void habilitarPanel()
+    {
+        jtfPrecioVehiculo.setEnabled(true);
+        jtfCantVehiculos.setEnabled(true);
+        jtfDiasArriendo.setEnabled(true);
+    }
+    public void deshabilitarPanel()
+    {
+        jtfRut.setText("");
+        jtfRut.requestFocus();
+        jtfPrecioVehiculo.setEnabled(false);
+        jtfCantVehiculos.setEnabled(false);
+        jtfDiasArriendo.setEnabled(false);
     }
 
     /**
@@ -27,27 +185,30 @@ public class Presupuesto extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        jtfRut = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jbtBuscar = new javax.swing.JButton();
+        jbtCancelar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        jtfCantVehiculos = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        jtfDiasArriendo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        jtfPrecioVehiculo = new javax.swing.JTextField();
+        jbtCalcularPresupuesto = new javax.swing.JButton();
+        jbtAnadirTabla = new javax.swing.JButton();
+        jbtLimpiar = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        jtfTotal = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
+        jLabel6 = new javax.swing.JLabel();
+        jtfNomCliente = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -55,103 +216,140 @@ public class Presupuesto extends javax.swing.JFrame {
 
         jLabel1.setText("Ingresar R.U.T.");
 
-        jButton1.setText("Buscar");
+        jbtBuscar.setText("Buscar");
+        jbtBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtBuscarActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Cancelar");
+        jbtCancelar.setText("Cancelar");
+        jbtCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtCancelarActionPerformed(evt);
+            }
+        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Calcular Presupuesto"));
 
-        jLabel2.setText("Ingresar Cantidad Vehículos:");
+        jLabel2.setText("Cantidad:");
 
-        jLabel3.setText("Ingresar Dias de Arriendo:");
+        jtfCantVehiculos.setEnabled(false);
 
-        jLabel4.setText("Ingresar Precio Vehículo:");
+        jLabel3.setText("Dias de Arriendo:");
 
-        jButton3.setText("Calcular Presupuesto");
+        jtfDiasArriendo.setEnabled(false);
 
-        jButton4.setText("Añadir a Tabla Presupuesto");
+        jLabel4.setText(" Precio $:");
 
-        jLabel5.setText("N° de Presupuesto:");
+        jtfPrecioVehiculo.setEnabled(false);
+
+        jbtCalcularPresupuesto.setText("Calcular Presupuesto");
+        jbtCalcularPresupuesto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtCalcularPresupuestoActionPerformed(evt);
+            }
+        });
+
+        jbtAnadirTabla.setText("Añadir en Tabla Presupuesto");
+        jbtAnadirTabla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtAnadirTablaActionPerformed(evt);
+            }
+        });
+
+        jbtLimpiar.setText("Limpiar");
+        jbtLimpiar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtLimpiarActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Total:");
+
+        jtfTotal.setEnabled(false);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addContainerGap()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(32, 32, 32)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jTextField5, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.LEADING))))
+                            .addComponent(jbtAnadirTabla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbtCalcularPresupuesto, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jbtLimpiar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jtfTotal, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                            .addComponent(jtfPrecioVehiculo, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jtfCantVehiculos, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jtfDiasArriendo, javax.swing.GroupLayout.Alignment.TRAILING))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel4)
+                    .addComponent(jtfPrecioVehiculo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtfCantVehiculos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtfDiasArriendo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
-                .addComponent(jButton3)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addComponent(jtfTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jbtCalcularPresupuesto)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jbtAnadirTabla)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jbtLimpiar)
+                .addContainerGap())
         );
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Tabla Precios:"));
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Patente", "Tipo Vehículo", "Marca", "Modelo", "Año", "Precio $"
+                "Patente", "Tipo Vehículo", "Marca", "Modelo", "Año", "Disponibilidad", "Precio $"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -166,7 +364,7 @@ public class Presupuesto extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 540, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -198,7 +396,7 @@ public class Presupuesto extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "RUT", "Nombre Cliente", "N° Prespuesto", "Presupuesto"
+                "N° Prespuesto", "RUT", "Nombre Cliente", "Presupuesto"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -217,8 +415,8 @@ public class Presupuesto extends javax.swing.JFrame {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jScrollPane2)
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -228,21 +426,29 @@ public class Presupuesto extends javax.swing.JFrame {
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
+        jLabel6.setText("Nombre:");
+
+        jtfNomCliente.setEnabled(false);
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2))
-                    .addComponent(jLabel1)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jtfRut, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jbtBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jbtCancelar))
+                            .addComponent(jLabel1))
+                        .addComponent(jtfNomCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -253,22 +459,25 @@ public class Presupuesto extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2))
+                            .addComponent(jtfRut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jbtBuscar)
+                            .addComponent(jbtCancelar))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(jtfNomCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -278,7 +487,7 @@ public class Presupuesto extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(39, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -288,9 +497,195 @@ public class Presupuesto extends javax.swing.JFrame {
                 .addContainerGap(108, Short.MAX_VALUE))
         );
 
-        pack();
+        setSize(new java.awt.Dimension(909, 545));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jbtCalcularPresupuestoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtCalcularPresupuestoActionPerformed
+        // TODO add your handling code here:
+        calcular();
+    }//GEN-LAST:event_jbtCalcularPresupuestoActionPerformed
+
+    private void jbtLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtLimpiarActionPerformed
+        // TODO add your handling code here:
+        limpiarCampos();
+    }//GEN-LAST:event_jbtLimpiarActionPerformed
+
+    private void jbtAnadirTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAnadirTablaActionPerformed
+        // TODO add your handling code here:
+        opcion = 0;
+        opcion = JOptionPane.showConfirmDialog(this,
+                "¿Añadir Presupuesto a la Lista?",
+                "GUARDAR DATOS",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        if(opcion == JOptionPane.YES_OPTION)
+        {
+            validaciones();
+            
+            mensaje = "Datos Añadidos Correctamente";
+            menError = "Error al Añadir Datos";
+            
+            rut_cliente = jtfRut.getText();
+            nom_cliente = jtfNomCliente.getText();
+            pres_cliente = jtfTotal.getText();
+        
+            tablaPresupuesto mysql = new tablaPresupuesto();
+            java.sql.Connection cn = mysql.Conectar();
+            sql = "insert into Presupuesto (rut_cliente, nom_cliente, pres_cliente) values(?,?,?)";
+        
+            try
+            {
+                PreparedStatement pst = cn.prepareStatement(sql);
+                pst.setString(1, rut_cliente);
+                pst.setString(2, nom_cliente);
+                pst.setString(3, pres_cliente);
+                int n = pst.executeUpdate();
+                JOptionPane.showMessageDialog(null,
+                    mensaje);
+            }
+            catch(SQLException ex)
+            {
+                JOptionPane.showMessageDialog(this,
+                    "Presupuesto Existente",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+            cerrarVentana();
+        }
+        else
+        {
+            cerrarVentana();
+            limpiarCampos();
+        }
+    }//GEN-LAST:event_jbtAnadirTablaActionPerformed
+
+    private void jbtBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtBuscarActionPerformed
+        // TODO add your handling code here:
+        if((this.jtfRut.getText().trim().isEmpty()))
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Debes Ingresar RUT",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfRut.requestFocus();
+            return;
+        }
+        rut_cliente = jtfRut.getText();
+        confirmaRut();
+        tablaPresupuesto mysql = new tablaPresupuesto();
+        java.sql.Connection cn = mysql.Conectar();
+        sql = "select * from Clientes where rut_cliente='"+rut_cliente+"';";
+        try
+        {
+            java.sql.Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next())
+            {
+                switch (opcion)
+                {
+                    case 1: JOptionPane.showMessageDialog(null,
+                            "El RUT ingresado ya existe");
+                        cerrarVentana();
+                        break;
+                        
+                    case 2: jtfNomCliente.setText(rs.getString(3));
+                        break;
+                }
+            }
+            else
+            {
+                switch(opcion)
+                {
+                    case 1: jtfNomCliente.requestFocus();
+                        break;
+                    case 2: JOptionPane.showMessageDialog(null, "El RUT Ingresado No Existe");
+                        cerrarVentana();
+                }
+            }
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null,
+                    "ERROR de Lectura de Datos");
+        }
+    }//GEN-LAST:event_jbtBuscarActionPerformed
+
+    private void jbtCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtCancelarActionPerformed
+        // TODO add your handling code here:
+        deshabilitarPanel();
+    }//GEN-LAST:event_jbtCancelarActionPerformed
+
+    public void cerrarVentana()
+    {
+        this.setVisible(false);
+        mp = new MantenedorPer();
+        mp.setVisible(true);
+    }
+    private boolean validarRut()
+    {
+        boolean valido = true;        
+        int suma = 0;
+        int pond = 2;
+        int resto = 0;
+        int valor = 0;
+        String digito = "";
+        int largo = 0;
+        
+        largo = this.jtfRut.getText().trim().length() - 2;
+        
+        for(int i=largo-1; i>-1; i--)
+        {
+            suma = suma + 
+            (Integer.parseInt(""+this.jtfRut.getText().trim().charAt(i)) * pond);
+            pond++;
+            if(pond > 7)
+            {
+                pond = 2;
+            }
+        }
+        resto = suma % 11;
+        valor = 11 - resto;
+        if(valor == 10)
+        {
+            digito = "K";
+        }
+        else if(valor == 11)
+        {
+            digito = "0";
+        }
+        else
+        {
+            digito = "" + valor;
+        }
+        
+        if(digito.charAt(0) != 
+                this.jtfRut.getText().trim().charAt(largo+1))
+        {
+            valido = false;
+        }
+        
+        return valido;
+    }
+    private void confirmaRut()
+    {
+        if(this.validarRut() == false)
+        {
+            JOptionPane.showMessageDialog(this,
+                    "RUT Invalido",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            jtfRut.setText("");
+            jtfRut.requestFocus();
+            return;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null,
+                    "RUT Valido");
+            habilitarPanel();
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -321,20 +716,17 @@ public class Presupuesto extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Presupuesto().setVisible(true);
+                new MantenedorPer().setVisible(true);
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -343,10 +735,16 @@ public class Presupuesto extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JButton jbtAnadirTabla;
+    private javax.swing.JButton jbtBuscar;
+    private javax.swing.JButton jbtCalcularPresupuesto;
+    private javax.swing.JButton jbtCancelar;
+    private javax.swing.JButton jbtLimpiar;
+    private javax.swing.JTextField jtfCantVehiculos;
+    private javax.swing.JTextField jtfDiasArriendo;
+    private javax.swing.JTextField jtfNomCliente;
+    private javax.swing.JTextField jtfPrecioVehiculo;
+    private javax.swing.JTextField jtfRut;
+    private javax.swing.JTextField jtfTotal;
     // End of variables declaration//GEN-END:variables
 }

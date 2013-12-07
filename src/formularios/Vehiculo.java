@@ -4,6 +4,12 @@
  */
 package formularios;
 
+import baseDatos.tablaVehiculos;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Carlos Aravena A
@@ -13,8 +19,51 @@ public class Vehiculo extends javax.swing.JFrame {
     /**
      * Creates new form Vehiculo
      */
+    private DefaultTableModel modelo;
+    MantenedorPer mp;
+    DatosVehiculo dv;
+    String sql;
     public Vehiculo() {
         initComponents();
+        tablaVehiculos();
+    }
+    public void tablaVehiculos()
+    {
+        modelo = new DefaultTableModel();
+        modelo.addColumn("Patente");
+        modelo.addColumn("Tipo Vehiculo");
+        modelo.addColumn("Marca");
+        modelo.addColumn("Modelo");
+        modelo.addColumn("Año");
+        modelo.addColumn("Disponibilidad");
+        modelo.addColumn("Precio $");
+        try
+        {
+            tablaVehiculos mysql = new tablaVehiculos();
+            java.sql.Connection cn= mysql.Conectar();
+            sql="Select * from Vehiculos";
+            java.sql.Statement st=cn.createStatement();
+            ResultSet rs=st.executeQuery(sql);
+            while(rs.next())
+            {
+                Object[] registro=new Object[8];
+                registro[0]=rs.getString("patente_veh");
+                registro[1]=rs.getString("tipo_veh");
+                registro[2]=rs.getString("marca_veh");
+                registro[3]=rs.getString("modelo_veh");
+                registro[4]=rs.getString("ano_veh");
+                registro[5]=rs.getString("disponibilidad_veh");
+                registro[6]=rs.getString("precio_veh");
+                modelo.addRow(registro);
+            }
+            jTable1.setModel(modelo);
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog( null,
+                    "Error de Lectura de Datos");
+        }
+        
     }
 
     /**
@@ -28,6 +77,7 @@ public class Vehiculo extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jmiAgregarVehiculo = new javax.swing.JMenuItem();
@@ -36,31 +86,32 @@ public class Vehiculo extends javax.swing.JFrame {
         OK = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Gestion Vehiculos");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Patente", "Tipo Vehiculo", "Modelo ", "Marca ", "Año", "Disponibilidad"
+                "Patente", "Tipo Vehiculo", "Marca ", "Modelo ", "Año", "Disponibilidad", "Precio $"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -69,12 +120,25 @@ public class Vehiculo extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jTable1);
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel1.setText("Listado de Vehículos.");
+
         jMenu1.setText("Gestionar");
 
         jmiAgregarVehiculo.setText("Agregar Vehiculo");
+        jmiAgregarVehiculo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiAgregarVehiculoActionPerformed(evt);
+            }
+        });
         jMenu1.add(jmiAgregarVehiculo);
 
         jmiModificarVehiculo.setText("Modificar Vehiculo");
+        jmiModificarVehiculo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiModificarVehiculoActionPerformed(evt);
+            }
+        });
         jMenu1.add(jmiModificarVehiculo);
 
         jMenuBar1.add(jMenu1);
@@ -82,6 +146,11 @@ public class Vehiculo extends javax.swing.JFrame {
         jMenu2.setText("Finalizar");
 
         OK.setText("OK");
+        OK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                OKActionPerformed(evt);
+            }
+        });
         jMenu2.add(OK);
 
         jMenuBar1.add(jMenu2);
@@ -94,19 +163,47 @@ public class Vehiculo extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(220, 220, 220)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(18, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(19, 19, 19))
         );
 
-        pack();
+        setSize(new java.awt.Dimension(613, 245));
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jmiAgregarVehiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAgregarVehiculoActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        dv = new DatosVehiculo(1);
+        dv.setVisible(true);
+    }//GEN-LAST:event_jmiAgregarVehiculoActionPerformed
+
+    private void jmiModificarVehiculoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiModificarVehiculoActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        dv = new DatosVehiculo(2);
+        dv.setVisible(true);
+    }//GEN-LAST:event_jmiModificarVehiculoActionPerformed
+
+    private void OKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_OKActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        mp = new MantenedorPer();
+        mp.setVisible(true);
+    }//GEN-LAST:event_OKActionPerformed
 
     /**
      * @param args the command line arguments
@@ -144,6 +241,7 @@ public class Vehiculo extends javax.swing.JFrame {
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem OK;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;

@@ -4,6 +4,14 @@
  */
 package formularios;
 
+import baseDatos.tablaClientes;
+import baseDatos.tablaPagos;
+import baseDatos.tablaPresupuesto;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Carlos Aravena A
@@ -13,8 +21,91 @@ public class TiposPago extends javax.swing.JFrame {
     /**
      * Creates new form TipoDePagos
      */
-    public TiposPago() {
+    FormasPago fp;
+    String sql;
+    String rut_pago, nomCliente_pago, forma_pago, codigo_cheque,
+            num_cheque, banco_pago, precio_pago;
+    String mensaje, menError;
+    private int opcion;
+    public TiposPago(int opcion) {
+        this.opcion = opcion;
         initComponents();
+        titulos();
+    }
+    public void titulos()
+    {
+        switch(opcion)
+        {
+            case 1://Agregar
+                setTitle("Agregar Formas de Pago");
+                break;
+            case 2://Modificar
+                setTitle("Modificar Formas de Pago");
+        }
+    }
+    private boolean validarRut()
+    {
+        boolean valido = true;        
+        int suma = 0;
+        int pond = 2;
+        int resto = 0;
+        int valor = 0;
+        String digito = "";
+        int largo = 0;
+        
+        largo = this.jtfRut.getText().trim().length() - 2;
+        
+        for(int i=largo-1; i>-1; i--)
+        {
+            suma = suma + 
+            (Integer.parseInt(""+this.jtfRut.getText().trim().charAt(i)) * pond);
+            pond++;
+            if(pond > 7)
+            {
+                pond = 2;
+            }
+        }
+        resto = suma % 11;
+        valor = 11 - resto;
+        if(valor == 10)
+        {
+            digito = "K";
+        }
+        else if(valor == 11)
+        {
+            digito = "0";
+        }
+        else
+        {
+            digito = "" + valor;
+        }
+        
+        if(digito.charAt(0) != 
+                this.jtfRut.getText().trim().charAt(largo+1))
+        {
+            valido = false;
+        }
+        
+        return valido;
+    }
+    private void  confirmarRut()
+    {
+        if(this.validarRut() == false)
+        {
+            JOptionPane.showMessageDialog(this,
+                    "RUT Invalido",
+                    "ERROR",
+                    JOptionPane.ERROR_MESSAGE);
+            jtfRut.setText("");
+            jtfRut.requestFocus();
+            return;
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null,
+                    "RUT valido");
+            habilitarPanel();
+        }
     }
 
     /**
@@ -27,22 +118,25 @@ public class TiposPago extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
+        jtfRut = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jbtBuscar = new javax.swing.JButton();
+        jbtCancelar = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox();
+        jcbSeleccionPago = new javax.swing.JComboBox();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        jtfCodCheque = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        jtfNumCheque = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        jtfBanco = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
-        jButton3 = new javax.swing.JButton();
+        jtfPagoPrecio = new javax.swing.JTextField();
+        jbtAnadir = new javax.swing.JButton();
+        jbtVolver = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jtfNomCliente = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -50,48 +144,82 @@ public class TiposPago extends javax.swing.JFrame {
 
         jLabel1.setText("Ingresar R.U.T");
 
-        jButton1.setText("Buscar");
+        jbtBuscar.setText("Buscar");
+        jbtBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtBuscarActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Cancelar");
+        jbtCancelar.setText("Cancelar");
+        jbtCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtCancelarActionPerformed(evt);
+            }
+        });
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Pagos en:"));
 
         jLabel2.setText("Forma de Pago:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<<Seleccionar Pago>>", "Cheque", "Efectivo" }));
+        jcbSeleccionPago.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<<Seleccionar Pago>>", "Cheque", "Efectivo" }));
+        jcbSeleccionPago.setEnabled(false);
+        jcbSeleccionPago.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbSeleccionPagoActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Codigo Cheque:");
 
+        jtfCodCheque.setEnabled(false);
+
         jLabel4.setText("Numero Cheque:");
+
+        jtfNumCheque.setEnabled(false);
 
         jLabel5.setText("Banco:");
 
+        jtfBanco.setEnabled(false);
+
         jLabel6.setText("Precio $:");
 
-        jButton3.setText("Añadir Lista De Pago");
+        jtfPagoPrecio.setEnabled(false);
+
+        jbtAnadir.setText("Añadir Lista De Pago");
+        jbtAnadir.setEnabled(false);
+        jbtAnadir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbtAnadirActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel5)
-                    .addComponent(jLabel6))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton3)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jTextField5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-                        .addComponent(jTextField4, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.Alignment.LEADING)))
-                .addContainerGap(103, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jcbSeleccionPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(jtfPagoPrecio, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
+                                .addComponent(jtfBanco, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jtfNumCheque, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jtfCodCheque, javax.swing.GroupLayout.Alignment.LEADING))))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addComponent(jbtAnadir, javax.swing.GroupLayout.PREFERRED_SIZE, 148, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -99,61 +227,81 @@ public class TiposPago extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jcbSeleccionPago, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtfCodCheque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtfNumCheque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jtfBanco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton3)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jtfPagoPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jbtAnadir)
+                .addContainerGap())
         );
+
+        jbtVolver.setText("Volver");
+
+        jLabel7.setText("Nombre Cliente:");
+
+        jtfNomCliente.setEnabled(false);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addContainerGap()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(jtfRut, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2))
+                                .addComponent(jbtBuscar))
                             .addComponent(jLabel1))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtCancelar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jbtVolver, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabel7)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jtfNomCliente))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                            .addGap(36, 36, 36)
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jtfRut, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jbtBuscar)
+                    .addComponent(jbtCancelar)
+                    .addComponent(jbtVolver))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7)
+                    .addComponent(jtfNomCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -162,19 +310,332 @@ public class TiposPago extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(60, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void cerrarVentana()
+    {
+        this.setVisible(false);
+        fp = new FormasPago();
+        fp.setVisible(true);
+    }
+    public void habilitarPanel()
+    {
+        jtfNomCliente.setEnabled(true);
+        jcbSeleccionPago.setEnabled(true);
+        jtfPagoPrecio.setEnabled(true);
+        jbtAnadir.setEnabled(true);
+    }
+     public void deshabilitarPanel()
+    {
+        jtfNomCliente.setEnabled(false);
+        jcbSeleccionPago.setEnabled(false);
+        
+        jtfPagoPrecio.setEnabled(false);
+        jbtAnadir.setEnabled(false);
+    }
+    private void jbtBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtBuscarActionPerformed
+        // TODO add your handling code here:
+        if(this.jtfRut.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Error Ingresar RUT",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfRut.requestFocus();
+            return;
+        }
+        rut_pago = jtfRut.getText();     
+        confirmarRut();
+        tablaPagos mysqling = new tablaPagos();
+        java.sql.Connection cning = mysqling.Conectar();
+        sql = "select * from Pagos where rut_pago='"+rut_pago+"';";
+        try
+        {
+            java.sql.Statement st =cning.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next())
+            {
+                switch (opcion)
+                {
+                    case 1:
+                        JOptionPane.showMessageDialog(null, 
+                                "El Usuario ya Existe");
+                        cerrarVentana();
+                        break;
+                    case 2:
+                        jtfNomCliente.setText(rs.getString(3) );
+                        jcbSeleccionPago.setSelectedItem(rs.getString(4));
+                        jtfCodCheque.setText(rs.getString(5));
+                        jtfNumCheque.setText(rs.getString(6));
+                        jtfBanco.setText(rs.getString(7));
+                        jtfPagoPrecio.setText(rs.getString(8));
+                        break;
+                }
+            }
+            else
+            {
+                switch(opcion)
+                {
+                    case 1:
+                        jtfNomCliente.requestFocus();
+                        break;
+                    case 2:
+                        JOptionPane.showMessageDialog(null,
+                                "El RUT Ingresado No Existe");
+                        cerrarVentana();
+                        break;
+                }
+            }
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null,
+                    "Error de Lectura en la Base de Datos");
+        }
+    }//GEN-LAST:event_jbtBuscarActionPerformed
+
+    public void validarCampos()
+    {
+        if(this.jtfNomCliente.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Error Ingresar Nombre Cliente",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+            this.jtfNomCliente.requestFocus();
+            return;
+        }
+        if(this.jcbSeleccionPago.getSelectedIndex()==0)
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Error Seleccionar Forma Pago",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+            this.jcbSeleccionPago.requestFocus();
+            return;
+        }
+        
+        if(this.jtfPagoPrecio.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Error Ingresar Precio a Pagar",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+            this.jtfPagoPrecio.requestFocus();
+            return;
+        }
+    
+    }
+    private void jbtAnadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAnadirActionPerformed
+        // TODO add your handling code here:
+        switch(opcion)
+        {
+            case 1://Ingreso
+                        //Validar Campos:
+                        validarCampos();
+                        //Crear Mensajes
+                        mensaje = "Forma Pago Registrado Exitosamente";
+                        menError = "Cliente Existente en la Base de Datos";
+                        //Lectura de datos desde el formulario
+                        rut_pago = jtfRut.getText();
+                        nomCliente_pago = jtfNomCliente.getText();
+                        forma_pago = (String)(jcbSeleccionPago.getSelectedItem());
+                        codigo_cheque = jtfCodCheque.getText();
+                        num_cheque = jtfNumCheque.getText();
+                        banco_pago = jtfBanco.getText();
+                        precio_pago = jtfPagoPrecio.getText();
+                        //Abrir Conexión Base de Datos:
+                        tablaPagos mysqling = new tablaPagos();
+                        java.sql.Connection cning = mysqling.Conectar();
+                        //Escribir Consulta MySQL
+                        sql = "insert into Pagos "
+                                + "(rut_pago,"
+                                + " nomCliente_pago,"
+                                + " forma_pago,"
+                                + " codigo_cheque,"
+                                + " num_cheque,"
+                                + " banco_pago,"
+                                + " precio_pago)"
+                                + " values (?,?,?,?,?,?,?)";
+                        //Ejecutar la consulta llenando los parametros con los valores capturados:
+                        try
+                        {
+                            PreparedStatement pst= cning.prepareStatement(sql);
+                            pst.setString(1, rut_pago);
+                            pst.setString(2, nomCliente_pago);
+                            pst.setString(3, forma_pago);
+                            pst.setString(4, codigo_cheque);
+                            pst.setString(5, num_cheque);
+                            pst.setString(6, banco_pago);
+                            pst.setString(7, precio_pago);
+                            int n = pst.executeUpdate();
+                            opcion = 0;
+                            opcion = JOptionPane.showConfirmDialog(this,
+                                    "¿Guardar Datos?",
+                                    "GUARDAR",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE);
+                            if(opcion == JOptionPane.YES_OPTION)
+                            {
+                                JOptionPane.showMessageDialog(null, mensaje);
+                            }
+                            else
+                            {
+                                limpiar();
+                            }
+                            cerrarVentana();
+                            break;
+                        }
+                        catch(SQLException ex)
+                        {
+                            JOptionPane.showMessageDialog(this,
+                            "Cliente ya Existe",
+                            "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                        }
+                break;
+                
+            case 2://Modificar 
+                        //Crear Mensajes
+                        //mensaje = "Cliente Actualizado Correctamente";
+                        //menError = "Cliente Existente en la Base de Datos";
+                        //Lectura de datos desde el formulario
+                        rut_pago = jtfRut.getText();
+                        nomCliente_pago = jtfNomCliente.getText();
+                        forma_pago = (String)(jcbSeleccionPago.getSelectedItem());
+                        codigo_cheque = jtfCodCheque.getText();
+                        num_cheque = jtfNumCheque.getText();
+                        banco_pago = jtfBanco.getText();
+                        precio_pago = jtfPagoPrecio.getText();
+                        //Abrir Conexión Base de Datos:
+                        tablaPagos update = new tablaPagos();
+                        java.sql.Connection cnup = update.Conectar();
+                        //Escribir Consulta MySQL
+                        sql = "select * from Pagos where rut_pago = '"+rut_pago+"';";
+                        //Ejecutar la consulta llenando los parametros con los valores capturados:
+                        try
+                        {
+                            java.sql.Statement st =cnup.createStatement();
+                            ResultSet rs = st.executeQuery(sql);
+                            if(rs.next())
+                            {
+                                int id_cliente = rs.getInt(1);
+                                System.out.println("ID = "+id_cliente);
+                                sql = "update Pagos set rut_pago = '"+rut_pago+"'"
+                                        + "where id_cliente = '"+id_cliente+"';";
+                                opcion = 0;
+                                opcion = JOptionPane.showConfirmDialog(this,
+                                        "¿Actualizar Datos?",
+                                        "ACTUALIZAR",
+                                        JOptionPane.YES_NO_OPTION,
+                                        JOptionPane.QUESTION_MESSAGE);
+                                if(opcion == JOptionPane.YES_OPTION)
+                                {
+                                    cerrarVentana();
+                                }
+                                else
+                                {
+                                    limpiar();
+                                }
+                            }
+                            return;
+                        }
+                        catch(SQLException ex)
+                        {
+                            JOptionPane.showMessageDialog(this,
+                            "Cliente No Existe",
+                            "ERROR",
+                            JOptionPane.ERROR_MESSAGE);
+                        }
+                break;
+        }
+    }//GEN-LAST:event_jbtAnadirActionPerformed
+
+    private void jbtCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtCancelarActionPerformed
+        // TODO add your handling code here:
+        limpiar();
+        deshabilitarPanel();
+    }//GEN-LAST:event_jbtCancelarActionPerformed
+
+    private void jcbSeleccionPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbSeleccionPagoActionPerformed
+        // TODO add your handling code here:
+        switch(opcion)
+        {
+            case 1://
+                if(this.jcbSeleccionPago.getSelectedIndex()==1)
+                {
+                    jtfCodCheque.setEnabled(true);
+                    jtfNumCheque.setEnabled(true);
+                    jtfBanco.setEnabled(true);
+                    }
+                if(this.jtfCodCheque.getText().trim().isEmpty())
+                {
+                    JOptionPane.showMessageDialog(this,
+                    "Error Ingresar Codigo Cheque",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+                    this.jtfCodCheque.requestFocus();
+                    return;
+               }
+               if(this.jtfNumCheque.getText().trim().isEmpty())
+               {
+                    JOptionPane.showMessageDialog(this,
+                    "Error Ingresar N° Cheque",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+                    this.jtfNumCheque.requestFocus();
+                    return;
+               }
+               if(this.jtfBanco.getText().trim().isEmpty())
+               {
+                    JOptionPane.showMessageDialog(this,
+                    "Error Ingresar Nombre Banco",
+                    "ERROR",
+                    JOptionPane.QUESTION_MESSAGE);
+                    this.jtfBanco.requestFocus();
+                    return;
+              }
+              else
+              {
+                    jtfCodCheque.setEnabled(false);
+                    jtfNumCheque.setEnabled(false);
+                    jtfBanco.setEnabled(false);
+              }
+                break;
+            case 2: //
+                if(this.jcbSeleccionPago.getSelectedIndex()==2)
+                {
+                    jtfCodCheque.setEnabled(false);
+                    jtfNumCheque.setEnabled(false);
+                    jtfBanco.setEnabled(false);
+                }
+        }
+    }//GEN-LAST:event_jcbSeleccionPagoActionPerformed
+
+    public void limpiar()
+    {
+        jtfNomCliente.setText("");
+        jcbSeleccionPago.setSelectedIndex(0);
+        jtfCodCheque.setText("");
+        jtfNumCheque.setText("");
+        jtfBanco.setText("");
+        jtfPagoPrecio.setText("");
+        jtfRut.setText("");
+        jtfRut.requestFocus();
+    }
+  
     /**
      * @param args the command line arguments
      */
@@ -205,27 +666,30 @@ public class TiposPago extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TiposPago().setVisible(true);
+                new FormasPago().setVisible(true);
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JComboBox jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JButton jbtAnadir;
+    private javax.swing.JButton jbtBuscar;
+    private javax.swing.JButton jbtCancelar;
+    private javax.swing.JButton jbtVolver;
+    private javax.swing.JComboBox jcbSeleccionPago;
+    private javax.swing.JTextField jtfBanco;
+    private javax.swing.JTextField jtfCodCheque;
+    private javax.swing.JTextField jtfNomCliente;
+    private javax.swing.JTextField jtfNumCheque;
+    private javax.swing.JTextField jtfPagoPrecio;
+    private javax.swing.JTextField jtfRut;
     // End of variables declaration//GEN-END:variables
 }

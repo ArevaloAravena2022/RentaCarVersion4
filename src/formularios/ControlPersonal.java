@@ -4,24 +4,63 @@
  */
 package formularios;
 
+import baseDatos.tablaClientes;
+import baseDatos.tablaUsuarios;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author Carlos Aravena
  */
 public class ControlPersonal extends javax.swing.JFrame {
-
     /**
      * Creates new form ControlAcceso
      */
+    tablaClientes mySQL = null;
+    Connection con;
+    Statement stm = null;
+    ResultSet rs = null;
+    
+    String sql = null;
+    
+    String num_usuario = "", cla_usuario = "";
+    String mensaje, menError;
+    
+    
     MantenedorPer mp;
     private int opcion;
     Principal prin;
+    
     public ControlPersonal() {
+        
         initComponents();
     }
-
+    
+    public void validarCampos()
+    {
+        if(this.jtfUsuarioPersonal.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Debe Ingresar N° Usuario",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jtfUsuarioPersonal.requestFocus();
+            return;
+        }
+        if(this.jpfClavePer.getText().trim().isEmpty())
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Debe Ingresar Clave Usuario",
+                    "ERROR DE INGRESO",
+                    JOptionPane.ERROR_MESSAGE);
+            this.jpfClavePer.requestFocus();
+            return;
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -133,9 +172,60 @@ public class ControlPersonal extends javax.swing.JFrame {
 
     private void jbtAccederPerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbtAccederPerActionPerformed
         // TODO add your handling code here:
-        this.setVisible(false);
-        mp=new MantenedorPer();
-        mp.setVisible(true);
+        mensaje = "Acceso Aceptado";
+        menError = "Acceso Denegado";
+        //Lectura de datos desde el formularios
+        num_usuario = jtfUsuarioPersonal.getText();
+        cla_usuario= jpfClavePer.getText();
+        //Validar Campos
+        validarCampos();
+        //Abrir Conexiones a MySQL
+        tablaUsuarios mysql = new tablaUsuarios();
+        java.sql.Connection cn = mysql.Conectar();
+        //Seleccionar Consulta
+        sql = "Select * From Usuarios where num_usuario='"+num_usuario+"';";
+        //Ejecutar consulta llenando los parametros con los valores capturados
+        try
+        {
+            java.sql.Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if(rs.next())
+            {
+                String clave_usuario = rs.getString(3);
+                if(clave_usuario.equalsIgnoreCase(cla_usuario))
+                {
+                    this.setVisible(false);
+                    mp = new MantenedorPer();
+                    mp.setVisible(true);
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(this,
+                            "Clave Incorrecta",
+                            "ERROR DE ACCESO",
+                            JOptionPane.ERROR_MESSAGE);
+                    if(clave_usuario!=cla_usuario)
+                    {
+                        jpfClavePer.setText("");
+                        jpfClavePer.requestFocus();
+                    }
+                }
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this,
+                        "Usuario No Existe",
+                        "USUARIO INCORRECTO",
+                        JOptionPane.ERROR_MESSAGE);
+                jtfUsuarioPersonal.setText("");
+                jtfUsuarioPersonal.requestFocus();
+            }
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog(null,
+                    "Error de Lectura de Datos");
+        }
     }//GEN-LAST:event_jbtAccederPerActionPerformed
 
     /**

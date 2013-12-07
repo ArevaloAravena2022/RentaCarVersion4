@@ -4,6 +4,7 @@
  */
 package formularios;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -18,6 +19,8 @@ public class Principal extends javax.swing.JFrame {
     private int opcion;
     ControlPersonal cp;
     public Principal() {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JFrame marco = new JFrame();
         initComponents();
     }
 

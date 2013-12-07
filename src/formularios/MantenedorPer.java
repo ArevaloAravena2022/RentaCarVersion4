@@ -18,6 +18,9 @@ public class MantenedorPer extends javax.swing.JFrame {
     IngresoClientes ic;
     SolicitudArriendo sa;
     Contrato con;
+    Presupuesto pres;
+    ListadoClientes lc;
+    
     private int opcion;
     public MantenedorPer() {
         initComponents();
@@ -43,7 +46,8 @@ public class MantenedorPer extends javax.swing.JFrame {
         jmiModificarReservas = new javax.swing.JMenuItem();
         jMenu7 = new javax.swing.JMenu();
         jmCrearContratos = new javax.swing.JMenuItem();
-        jMenuItem9 = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jmiCalcularPresupuesto = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         jmConsultarRegistros = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
@@ -112,14 +116,28 @@ public class MantenedorPer extends javax.swing.JFrame {
 
         jmbGestionarSolicitudes.add(jMenu7);
 
-        jMenuItem9.setText("Calcular Presupuesto");
-        jmbGestionarSolicitudes.add(jMenuItem9);
+        jMenu4.setText("Gestionar Presupuestos");
+
+        jmiCalcularPresupuesto.setText("Calcular Presupuesto");
+        jmiCalcularPresupuesto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiCalcularPresupuestoActionPerformed(evt);
+            }
+        });
+        jMenu4.add(jmiCalcularPresupuesto);
+
+        jmbGestionarSolicitudes.add(jMenu4);
 
         jMenuBar1.add(jmbGestionarSolicitudes);
 
         jMenu5.setText("Consultas");
 
         jmConsultarRegistros.setText("Consultar Registros Clientes");
+        jmConsultarRegistros.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmConsultarRegistrosActionPerformed(evt);
+            }
+        });
         jMenu5.add(jmConsultarRegistros);
 
         jMenuItem2.setText("Consultar Por R.U.T");
@@ -158,14 +176,14 @@ public class MantenedorPer extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGap(0, 459, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 179, Short.MAX_VALUE)
         );
 
-        setSize(new java.awt.Dimension(416, 238));
+        setSize(new java.awt.Dimension(475, 238));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -219,6 +237,20 @@ public class MantenedorPer extends javax.swing.JFrame {
         con.setVisible(true);
     }//GEN-LAST:event_jmCrearContratosActionPerformed
 
+    private void jmiCalcularPresupuestoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiCalcularPresupuestoActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        pres = new Presupuesto(1);
+        pres.setVisible(true);
+    }//GEN-LAST:event_jmiCalcularPresupuestoActionPerformed
+
+    private void jmConsultarRegistrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmConsultarRegistrosActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        lc = new ListadoClientes(1);
+        lc.setVisible(true);
+    }//GEN-LAST:event_jmConsultarRegistrosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -257,6 +289,7 @@ public class MantenedorPer extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuBar jMenuBar1;
@@ -264,7 +297,6 @@ public class MantenedorPer extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem4;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuItem jmConsultarRegistros;
     private javax.swing.JMenuItem jmCrearContratos;
@@ -274,6 +306,7 @@ public class MantenedorPer extends javax.swing.JFrame {
     private javax.swing.JMenu jmbGestionarSolicitudes;
     private javax.swing.JMenu jmbSalir;
     private javax.swing.JMenuItem jmeModificarClientes;
+    private javax.swing.JMenuItem jmiCalcularPresupuesto;
     private javax.swing.JMenuItem jmiModificarReservas;
     // End of variables declaration//GEN-END:variables
 }

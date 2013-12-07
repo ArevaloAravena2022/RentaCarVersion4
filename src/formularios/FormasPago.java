@@ -4,6 +4,13 @@
  */
 package formularios;
 
+import baseDatos.tablaPagos;
+import baseDatos.tablaVehiculos;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Carlos Aravena A
@@ -13,8 +20,52 @@ public class FormasPago extends javax.swing.JFrame {
     /**
      * Creates new form FormasPago
      */
+    TiposPago tp;
+    MantenedorPer mp;
+    private DefaultTableModel modelo;
+    String sql;
+    private int opcion;
     public FormasPago() {
         initComponents();
+        tablaPagos();
+    }
+    public void tablaPagos()
+    {
+        modelo = new DefaultTableModel();
+        modelo.addColumn("RUT Cliente");
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Forma Pago");
+        modelo.addColumn("Codigo Cheque");
+        modelo.addColumn("N° Cheque");
+        modelo.addColumn("Banco");
+        modelo.addColumn("Precio $");
+        try
+        {
+            tablaPagos mysql = new tablaPagos();
+            java.sql.Connection cn= mysql.Conectar();
+            sql="Select * from Pagos";
+            java.sql.Statement st=cn.createStatement();
+            ResultSet rs=st.executeQuery(sql);
+            while(rs.next())
+            {
+                Object[] registro=new Object[8];
+                registro[0]=rs.getString("rut_pago");
+                registro[1]=rs.getString("nomCliente_pago");
+                registro[2]=rs.getString("forma_pago");
+                registro[3]=rs.getString("codigo_cheque");
+                registro[4]=rs.getString("num_cheque");
+                registro[5]=rs.getString("banco_pago");
+                registro[6]=rs.getString("precio_pago");
+                modelo.addRow(registro);
+            }
+            jTable1.setModel(modelo);
+        }
+        catch(SQLException ex)
+        {
+            JOptionPane.showMessageDialog( null,
+                    "Error de Lectura de Datos");
+        }
+        
     }
 
     /**
@@ -56,7 +107,7 @@ public class FormasPago extends javax.swing.JFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Forma de Pago", "Codigo Cheque", "Numero Cheque", "Banco", "Precio $", "Rut Cliente ", "Nombre Cliente"
+                "Rut Cliente ", "Nombre Cliente", "Forma de Pago", "Codigo Cheque", "Numero Cheque", "Banco", "Precio $"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -72,9 +123,19 @@ public class FormasPago extends javax.swing.JFrame {
         jMenu1.setText("Gestionar");
 
         jmiAgregarPago.setText("Agregar Pago");
+        jmiAgregarPago.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiAgregarPagoActionPerformed(evt);
+            }
+        });
         jMenu1.add(jmiAgregarPago);
 
         jmiModificarPago.setText("Modificar Pago");
+        jmiModificarPago.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiModificarPagoActionPerformed(evt);
+            }
+        });
         jMenu1.add(jmiModificarPago);
 
         jMenuBar1.add(jMenu1);
@@ -82,6 +143,11 @@ public class FormasPago extends javax.swing.JFrame {
         jMenu2.setText("Finalizar");
 
         jmiOK.setText("OK");
+        jmiOK.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jmiOKActionPerformed(evt);
+            }
+        });
         jMenu2.add(jmiOK);
 
         jMenuBar1.add(jMenu2);
@@ -108,6 +174,37 @@ public class FormasPago extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(693, 286));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jmiAgregarPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiAgregarPagoActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        tp = new TiposPago(1);
+        tp.setVisible(true);
+    }//GEN-LAST:event_jmiAgregarPagoActionPerformed
+
+    private void jmiModificarPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiModificarPagoActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+        tp = new TiposPago(2);
+        tp.setVisible(true);
+    }//GEN-LAST:event_jmiModificarPagoActionPerformed
+
+    private void jmiOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jmiOKActionPerformed
+        // TODO add your handling code here:
+        opcion = 0;
+        opcion = JOptionPane.showConfirmDialog(this,
+                "¿Desea Volver?",
+                "VOLVER",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE);
+        if(opcion == JOptionPane.YES_OPTION)
+        {
+            this.setVisible(false);
+            mp = new MantenedorPer();
+            mp.setVisible(true);
+        }
+        
+    }//GEN-LAST:event_jmiOKActionPerformed
 
     /**
      * @param args the command line arguments
